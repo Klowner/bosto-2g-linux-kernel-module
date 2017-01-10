@@ -2,14 +2,18 @@ CC=gcc
 INC=-I/usr/include/libusb-1.0
 LIB=-L/lib/$(arch)-linux-gnu/libusb-1.0.so.0
 
-.PHONY: all clean archive
+.PHONY: all clean archive module
 
 obj-m += bosto_2g.o
- 
-all:
-	$(CC) detach_usbhid.c $(INC) $(LIB) -lusb-1.0 -o detach_usbhid
+
+all: module detach_usbhid
+
+module: bosto_2g.c
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
- 
+
+detach_usbhid: detach_usbhid.c
+	$(CC) detach_usbhid.c $(INC) $(LIB) -lusb-1.0 -o detach_usbhid
+
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 	rm detach_usbhid
